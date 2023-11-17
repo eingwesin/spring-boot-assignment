@@ -3,9 +3,24 @@
     <head>
         <title>Register</title>
          <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+         <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+		<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+		<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
     </head>
     <body>
-    <div th:insert="navbar :: navbar">  </div>
+    <nav th:fragment="navbar" class="navbar navbar-expand-md bg-dark navbar-dark">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" th:href="@{/}">Restaurants Voting System</a>
+        </div>
+        <ul class="nav navbar-nav">
+          
+            <li><a class="nav-link" th:href="@{/confirm-account-vote}">Session</a></li>
+
+             
+        </ul>
+    </div>    
+</nav>
     	<div>
   		
     		<form action="#" th:action="@{/register}" th:object="${userEntity}" method="post">

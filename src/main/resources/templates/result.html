@@ -1,0 +1,128 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Voting Monitoring</title>
+        
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+
+</head>
+<body>
+
+
+
+<nav th:fragment="navbar" class="navbar navbar-expand-md bg-dark navbar-dark">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" th:href="@{/}">Restaurants Voting System</a>
+        </div>
+        <ul class="nav navbar-nav">
+          
+            <!-- 
+            	<li><a class="nav-link" th:href="@{/confirm-account-vote}">Voting</a></li>
+             -->
+
+            <li><a class="nav-link" th:href="@{/}">Result</a></li>    
+        </ul>
+    </div>    
+</nav>
+       
+      
+       
+   <form >
+   
+   <table class="table ..." id="data-table">
+      <thead>
+      <tr>
+         
+         <th>Name</th>
+         <th>Location</th>
+         <th>Price</th>
+         <th>Style</th>
+         <th>Rating</th>
+         <th>VotingCount</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr role="row" th:each="request : ${list}">
+      
+         
+         <td th:text="${request.name}"></td>
+         <td th:text="${request.location}"></td>
+         <td th:text="${request.priceLevel}"></td>
+         <td th:text="${request.type}"></td>
+         <td th:text="${request.publicReview}"></td>
+         <td th:text="${request.votingCount}"></td>
+      </tr>
+      </tbody>
+   </table>
+   </div>
+   
+</form>
+
+
+
+
+
+
+<script>
+$(document).ready(function () {
+    setInterval(function () {
+    	
+    	
+    	
+    	$.ajax({
+    		 type: "GET",
+             url: "/check-updates",
+             dataType: 'json',
+    	    success: function(data) {
+    	        // Clear existing rows from the table body
+    	        console.log("success");
+  	        $('#data-table tbody').empty();
+				console.log("tbody");
+    	        // Append new rows to the table body
+    	        $.each(data, function(index, request) {
+    	        	
+    	        	console.log("hello",request.name);
+    	            $('#data-table tbody').append(
+    	            		
+    	            		
+ 
+    	            		'<tr>' +
+    	            		'<td>' + request.name + '</td>' +
+    	            		'<td>' + request.location + '</td>' +
+    	            		'<td>' + request.priceLevel+ '</td>' +
+    	            		'<td>' + request.type + '</td>' +
+    	            		'<td>' + request.publicReview + '</td>' +
+    	            		'<td>' + request.votingCount + '</td>' +
+    	            		
+    	            		'</tr>' 
+    	            		
+    	            		
+    	            	
+    	              
+    	            );
+    	        });
+   
+
+    	        // Reload the content of the data-table element
+    	       // $("#data-table").load("/voting #data-table");
+    	    },
+    	    error: function(jqXHR, textStatus, errorThrown) {
+    	        console.error('AJAX Error:', textStatus, errorThrown);
+    	    }
+    	});
+    	
+    	
+    }, 5000); // Poll every 5 seconds (adjust as needed)
+});
+
+</script>
+
+    
+ 
+       
+</body>
+</html> 

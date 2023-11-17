@@ -4,9 +4,6 @@
         <title>voting</title>
         
     <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
-    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
-<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
-<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 
 </head>
 <body>
@@ -42,46 +39,23 @@
         </center>
        
        
-   <form method="post" th:action="@{/save}" th:object="${selectedItems}">
-   <div class="table-responsive" th:fragment="search_list">
-   <table class="table ..." id="data-table">
-      <thead>
-      <tr>
-         <th></th>
-         <th>Name</th>
-         <th>Location</th>
-         <th>Price</th>
-         <th>Style</th>
-         <th>Rating</th>
-         
-      </tr>
-      </thead>
-      <tbody>
-      <tr role="row" th:each="request : ${list}">
-         <td>
-     <input type="checkbox" name="selectedItems" th:value="${request.restaurantID}"/>
-                   
-         </td>
-         <td th:text="${request.name}"></td>
-         <td th:text="${request.location}"></td>
-         <td th:text="${request.priceLevel}"></td>
-         <td th:text="${request.type}"></td>
-         <td th:text="${request.publicReview}"></td>
-         
-      </tr>
-      </tbody>
-   </table>
-   </div>
-   <button class="btn btn-primary show-selected">Vote</button>
-</form>
-
-
-
-
- 
-
+    <form th:action="@{/process-selected}" th:object="${selectedItems}" method="post">
+        <table>
+            <tr th:each="item : ${list}">
+                <td>
+                    <input type="checkbox" th:id="${'checkbox_' + item.restaurantID}" th:value="${item.restaurantID}" name="selectedItems"/>
+                </td>
+                <td th:text="${item.name}"></td>
+                <!-- Add more columns as needed -->
+            </tr>
+        </table>
+        <button type="submit">Submit</button>
+    </form>
+</body>
     
- 
+ <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
        
 </body>
 </html> 
