@@ -19,9 +19,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 import sg.gov.org.ConfirmationToken;
 import sg.gov.org.model.RestaurantEntity;
+import sg.gov.org.model.SessionEntity;
 import sg.gov.org.model.UserEntity;
 import sg.gov.org.repository.ConfirmationTokenRepository;
 import sg.gov.org.repository.RestaurantRepository;
+import sg.gov.org.repository.SessionRepository;
 import sg.gov.org.repository.UserRepository;
 import sg.gov.org.service.EmailService;
 
@@ -32,18 +34,23 @@ public class UserAccountController {
     private UserRepository userRepository;
     
     @Autowired
+    private  SessionRepository sesRepository;
+    
+    @Autowired
     private ConfirmationTokenRepository confirmationTokenRepository;
 
     @Autowired
     private EmailService emailService;
 
-    @RequestMapping(value="/register", method = RequestMethod.GET)
-    public ModelAndView displayRegistration(ModelAndView modelAndView, UserEntity userEntity)
+    @RequestMapping(value="/login", method = RequestMethod.GET)
+    public ModelAndView loginForm(ModelAndView modelAndView, UserEntity userEntity)
     {
         modelAndView.addObject("userEntity", userEntity);
-        modelAndView.setViewName("register");
+        modelAndView.setViewName("login");
         return modelAndView;
     }
+  
+    
     @RequestMapping(value="/navbar", method = RequestMethod.GET)
     public ModelAndView displayNavBar(ModelAndView modelAndView, UserEntity userEntity)
     {
@@ -52,13 +59,100 @@ public class UserAccountController {
         return modelAndView;
     }
     
+    @RequestMapping(value="/createSession", method = RequestMethod.GET)
+    public ModelAndView displaySession(ModelAndView modelAndView, SessionEntity sessEntity)
+    {
+    	 modelAndView.addObject("sessEntity", sessEntity);
+        modelAndView.setViewName("eventCreate");
+        return modelAndView;
+    }
+  
+    @RequestMapping(value="/createSession/save", method = RequestMethod.POST)
+    public ModelAndView createSession(ModelAndView modelAndView, SessionEntity sessEntity)
     
+    {
+    	
+    	SessionEntity existingEvent =sesRepository.findByEventNameIgnoreCase(sessEntity.getEventName());
+    	 if(existingEvent != null)
+         {
+             modelAndView.addObject("message","This event already exists!");
+            // modelAndView.setViewName("error");
+             modelAndView.setViewName("eventCreate");
+            
+         }else {
+        	 sessEntity.setStatus("A");
+         	sesRepository.save(sessEntity);
+         	
+         	modelAndView.addObject("message","Event has been created !!");
+             modelAndView.setViewName("eventCreate");
+           
+         }
+    		
+    	  return modelAndView;
+    	
+    }
+  
+    @RequestMapping(value="/endSession", method = RequestMethod.GET)
+    public ModelAndView displayEndSession(ModelAndView modelAndView, SessionEntity sessEntity)
+    {
+    	
+        modelAndView.setViewName("eventStop");
+        return modelAndView;
+    }
+    
+    @RequestMapping(value="/endSession/save", method = RequestMethod.POST)
+    public ModelAndView endSession(ModelAndView modelAndView, SessionEntity sessEntity)
+    {
+    	
+    	SessionEntity existingEvent =sesRepository.findByEventNameIgnoreCase(sessEntity.getEventName());
+   	  if(existingEvent != null)
+        {
+   		existingEvent.setStatus("D");
+    	sesRepository.save(existingEvent);
+    	
+    	modelAndView.addObject("message","Event has been ended !!");
+        modelAndView.setViewName("eventStop");
+           
+        }else {
+        	modelAndView.addObject("message","This event is not available to stop!!");
+            // modelAndView.setViewName("error");
+             modelAndView.setViewName("eventStop");
+        }
+    	
+    	
+        return modelAndView;
+    }
+    
+    @RequestMapping(value="/authorizedUser", method = RequestMethod.GET)
+    public ModelAndView authorizedUser(ModelAndView modelAndView, UserEntity userEntity)
+    {
+    	
+    	if(userEntity.getEmailId().equals("adminuser1@gmail.com") || userEntity.getEmailId().equals("adminuser2@gmail.com"))
+    	{
+    		modelAndView.setViewName("register");
+    	}
+       
+        
+        return modelAndView;
+    }
+    
+    @RequestMapping(value="/register", method = RequestMethod.GET)
+    public ModelAndView displayRegistration(ModelAndView modelAndView, UserEntity userEntity)
+    {
+        modelAndView.addObject("userEntity", userEntity);
+        modelAndView.setViewName("register");
+        return modelAndView;
+    }
+   
+    
+   
+ 
     
     @RequestMapping(value="/register", method = RequestMethod.POST)
     public ModelAndView registerUser(ModelAndView modelAndView, UserEntity userEntity)
     {
 
-    	UserEntity existingUser = userRepository.findByEmailIdIgnoreCase(userEntity.getEmailId());
+    	UserEntity existingUser = userRepository.findByEmailIdAndEventName(userEntity.getEmailId(),userEntity.getEventName());
         if(existingUser != null)
         {
             modelAndView.addObject("message","This email already exists!");
@@ -99,13 +193,26 @@ public class UserAccountController {
 
         if(token != null)
         {
-        	UserEntity user = userRepository.findByEmailIdIgnoreCase(token.getUserEntity().getEmailId());
-            user.setEnabled(true);
-            userRepository.save(user);
-            
-            
-           
-            modelAndView.setViewName("accountVerified");
+        	UserEntity user = userRepository.findByEmailIdAndEventName(token.getUserEntity().getEmailId(),token.getUserEntity().getEventName());
+        	
+        	if(user !=null ){
+        	SessionEntity event=sesRepository.findByEventNameIgnoreCase(user.getEventName());
+        	
+        	if(event.getStatus().equals("D")) {
+        		modelAndView.addObject("message","Event session has been expired!!");
+                modelAndView.setViewName("accountVerified");
+        		
+        	}else {
+        		user.setEnabled(true);
+                userRepository.save(user);
+                String message="Congratulations! Your account has been activated and email is verified!";
+                modelAndView.addObject("message",message);
+                modelAndView.setViewName("accountVerified");
+        	}
+        	}else {
+        		 modelAndView.addObject("message","User don't have access to event session!");
+                 modelAndView.setViewName("error");
+        	}
         }
         else
         {

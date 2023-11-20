@@ -15,17 +15,17 @@
         </div>
         <ul class="nav navbar-nav">
           
-          <li><a class="nav-link" th:href="@{/register}">Invite</a></li>
+          	<li><a class="nav-link" th:href="@{/register}">Invite</a></li>
             <li><a class="nav-link" th:href="@{/createSession}">CreateSession</a></li>
             <li><a class="nav-link" th:href="@{/endSession}">EndSession</a></li>
-            <li><a class="nav-link" th:href="@{/generatedResult}">GeneratedResult</a></li>
+
              
         </ul>
     </div>    
 </nav>
     	<div>
   		
-    		<form action="#" th:action="@{/register}" th:object="${userEntity}" method="post">
+    		<form action="#" th:action="@{/createSession/save}" th:object="${sessionEntity}" method="post">
             <table>
                 <!-- 
                 <tr>
@@ -48,17 +48,14 @@
                 <tr>
                 </tr>
                 <tr>
-                    <td><label for="emailId">Email</label></td>
-                    <td><input  type="text" name="emailId"></input></td>
-                </tr>
-                <tr>
-                    <td><label for="eventId">EventName</label></td>
+                    <td><label for="eventName">Event Name</label></td>
                     <td><input  type="text" name="eventName"></input></td>
                 </tr>
                 
                 <tr>
                     <td><input type="reset" value="Clear"/></td>
-                    <td><input type="submit" value="InviteToJoin"></input></td>
+                    <td><input type="submit" value="CreateAndStart"></input></td>
+                    
                 </tr>
             </table>
         </form>

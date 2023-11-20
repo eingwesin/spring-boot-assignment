@@ -25,64 +25,42 @@ import sg.gov.org.dto.RestaurantDTO;
 import sg.gov.org.model.RestaurantEntity;
 import sg.gov.org.model.UserEntity;
 import sg.gov.org.repository.RestaurantRepository;
+import sg.gov.org.repository.UserRepository;
 
 @Controller
 public class RestaurantsVotingController {
 	 @Autowired
-	    private RestaurantRepository restaurantRepository;
+	  private RestaurantRepository restaurantRepository;
+	 
+	 @Autowired
+	  private UserRepository userRepository;
+	 
+	 @RequestMapping(value="/result", method = RequestMethod.GET)
+	 public  ModelAndView displayResult(ModelAndView modelAndView,UserEntity userEntity) {
+		 modelAndView.addObject("list", restaurantRepository.findAll());
+		 modelAndView.setViewName("result");
+	     return modelAndView;
+	 }
+	 
+	 
+	 @RequestMapping(value="/generatedResult", method = RequestMethod.GET)
+	 public  ModelAndView generateFinal(ModelAndView modelAndView,UserEntity userEntity) {
+		 modelAndView.setViewName("/generatedResult");
+	     return modelAndView;
+	 }
 	 
 	 
 	 @RequestMapping(value="/voting", method = RequestMethod.GET)
-	    public ModelAndView displayRegistration(ModelAndView modelAndView, UserEntity userEntity)
-	    {
-	        modelAndView.addObject("userEntity", userEntity);
-	        modelAndView.setViewName("voting");
-	        return modelAndView;
-	    }
-	 
-	 
-	 
-	 @GetMapping("/all")
-	 public String showAll(Model model) {
-	     model.addAttribute("list", restaurantRepository.findAll());
-	     return "voting";
+	 public ModelAndView displayVoting(ModelAndView modelAndView,UserEntity userEntity) {
+		 
+		 modelAndView.addObject("userEntity", userEntity);
+		 modelAndView.addObject ("list", restaurantRepository.findAll());
+		 modelAndView.setViewName("voting");
+	     return modelAndView;
 	 }
 	 
 	 
-	 @GetMapping("/result")
-	 public String showResult(Model model) {
-	     model.addAttribute("list", restaurantRepository.findAll());
-	     return "result";
-	 }
-	 
-//	 @PostMapping("/save")
-//	 public String save(ModelAndView modelAndView,RestaurantEntity entity) {
-//		 
-//		 System.out.println(entity.getName());
-//		
-//		// restaurantRepository.updateVotingCount(Id);
-//		 return "voting";
-//	 }
-//	 
-	 
-//	 @PostMapping("/save")
-//	 public String saveBooks(@ModelAttribute RestaurantDTO form, Model model) {
-//		 
-//		 if(form!=null) {
-//			 List<RestaurantEntity> restaurants=form.getRestaurants();
-//			 
-//			 for(RestaurantEntity restaruant:restaurants) {
-//				 System.out.println("this is "+ restaruant.getName());
-//			 }
-//		     
-//			 //bookService.saveAll(form.getRestaurants());
-//
-//		   //  model.addAttribute("books", bookService.findAll());
-//		     
-//			 
-//		 }
-//		 return "save";
-//	 }
+
 	 
 	  @PostMapping("/save")
 	 public String processSelected(@RequestParam("selectedItems") List<String> selectedItems,Model model) {
@@ -90,9 +68,11 @@ public class RestaurantsVotingController {
 	        // ...
 		  
 		   for(String item: selectedItems) {
+			   
 			   restaurantRepository.updateVotingCount(item);
 		   }
-
+		   
+		   
 		   model.addAttribute("list", restaurantRepository.findAll());
 	        return "redirect:/result";
 	  }
@@ -100,31 +80,18 @@ public class RestaurantsVotingController {
 	  
 	  @GetMapping("/check-updates")
 	   public  ResponseEntity<List<RestaurantEntity>> checkUpdates(Model model){ 
-	        // Logic to check if there are updates in the database
-	        // Return true if there are updates, false otherwise
-		  
-		  //HashMap<String,Object> map=new HashMap<String,Object>();
-		 // boolean checking=true;
-		 // map.put("message",checking);
-		  //model.addAttribute("list", restaurantRepository.findAll()); 
-
-	     // return new ResponseEntity<HashMap<String,Object>>(map, HttpStatus.OK); 
+	       
 		  
 		  List<RestaurantEntity> list=restaurantRepository.findAll();
 		  return new ResponseEntity<List<RestaurantEntity>>(list,HttpStatus.OK);
 	   
 	  }
-	  
-//	 List<RestaurantEntity> restaurants=restaurantRepository.findAll();
-//     
-//     modelAndView.addObject("data",restaurants);
-	  
-	  
+
 	  
 	  @GetMapping("/refreshdata")
 	  public ModelAndView getResultBySearchKey()
 	      {
-		  	List<RestaurantEntity> list=restaurantRepository.findAll();//results from db
+		  	List<RestaurantEntity> list=restaurantRepository.findAll();
 	          ModelAndView mv= new ModelAndView("voting::search_list"); 
 	          mv.addObject("list",list);
 

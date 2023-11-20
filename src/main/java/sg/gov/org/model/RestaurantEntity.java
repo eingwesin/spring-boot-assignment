@@ -1,10 +1,13 @@
 package sg.gov.org.model;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 @Entity
@@ -33,7 +36,17 @@ public class RestaurantEntity {
     @Column(name="votingcount")
     private long votingCount;
 
+    @Column(name="updated_date")
+	private Date updt;
 	
+	public Date getUpdt() {
+		return updt;
+	}
+
+	public void setUpdt(Date updt) {
+		this.updt = updt;
+	}
+
 	public long getVotingCount() {
 		return votingCount;
 	}
@@ -89,4 +102,9 @@ public class RestaurantEntity {
 	public void setPublicReview(String publicReview) {
 		this.publicReview = publicReview;
 	}
+	
+	@PrePersist
+    protected void onCreate() {
+        updt = new Date(); // Set the default value before persisting
+    }
 }

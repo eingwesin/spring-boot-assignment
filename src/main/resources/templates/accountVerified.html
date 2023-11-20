@@ -13,9 +13,14 @@
        
     </div>    
 </nav>
+
+	 
       	<center>
-            <h5>Congratulations! Your account has been activated and email is verified!</h5>
-            <a class="nav-link" th:href="@{/all}">Start Voting</a></li></h5>
+            <h5><span th:text="${message}"></span></h5>
+            <div th:if="${message} != null and ${#strings.contains(message, 'verified')}">
+            	 <a class="nav-link" th:href="@{/voting}">Start Voting</a></li></h5>
+	 		</div>
+           
         </center>
        
        
